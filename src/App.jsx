@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 function App() {
   const targetRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -6,6 +6,7 @@ function App() {
   const callbackFunction = (entries) => {
     const [entry] = entries; // const entry = entries[0];
     setIsVisible(entry.isIntersecting);
+    console.log("callback!!");
   };
   const options = useMemo(() => {
     return {
@@ -14,6 +15,17 @@ function App() {
       threshold: 0.3,
     };
   }, []);
+
+  useEffect(() => {
+    console.log("useEffect!!");
+    const observer = new IntersectionObserver(callbackFunction, options);
+    const currentTarget = targetRef.current;
+    if (currentTarget) observer.observe(currentTarget);
+
+    return () => {
+      if (currentTarget) observer.unobserve(currentTarget);
+    };
+  }, [targetRef, options]);
 
   return (
     <>
